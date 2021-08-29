@@ -1,12 +1,14 @@
+// SPDX-License-Identifier: MIT
+
 pragma solidity ^0.8.0;
 
 import "./libs/ERC20.sol";
 
-// LithToken with Governance.
-contract LithToken is ERC20('LITHIUM', 'LITHIUM') {
+// The wee Dragon Egg token.
+contract DragonEggToken is ERC20('Dragon Egg', 'DREGG') {
 
     constructor() {
-        _mint(address(0x3a1D1114269d7a786C154FE5278bF5b1e3e20d31), uint256(37500000000000000000000));
+        _mint(address(0x306e5F7FAe63a86b3E2D88F94cCa8D7614684D91), uint256(5000000000000000000000));
     }
 
     /// @notice Creates `_amount` token to `_to`. Must only be called by the owner (MasterChef).

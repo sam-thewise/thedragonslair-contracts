@@ -1,0 +1,14 @@
+{
+    "name": "the-dragons-lair-farm",
+    "version": "1.0.0",
+    "description": "",
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "SamTheWise",
+    "license": "MIT",
+    "dependencies": {
+      "@openzeppelin/contracts": "^4.3.0"
+    }
+  }
