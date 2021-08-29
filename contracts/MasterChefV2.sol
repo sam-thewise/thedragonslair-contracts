@@ -190,7 +190,11 @@ contract MasterChefV2 is Ownable, ReentrancyGuard {
             dragonEggReward = dragonEggMaximumSupply - dragonEgg.totalSupply();
 
         if (dragonEggReward > 0)
-            dragonEgg.mint(address(this), dragonEggReward);
+        {
+            dragonEgg.mint(address(this), dragonEggReward * 900 / 1000);
+            dragonEgg.mint(feeAddress, dragonEggReward * 100 / 1000);
+        }
+
 
         // The first time we reach the Dragon Eggs max supply we solidify the end of farming.
         if (dragonEgg.totalSupply() >= dragonEggMaximumSupply && emmissionEndBlock == type(uint256).max)
