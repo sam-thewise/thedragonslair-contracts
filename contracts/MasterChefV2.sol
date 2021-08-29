@@ -22,7 +22,7 @@ contract MasterChefV2 is Ownable, ReentrancyGuard {
         uint256 amount;         // How many LP tokens the user has provided.
         uint256 rewardDebt;     // Reward debt. See explanation below.
         //
-        // We do some fancy math here. Basically, any point in time, the amount of LITHs
+        // We do some fancy math here. Basically, any point in time, the amount of DragonEggs
         // entitled to a user but is pending to be distributed is:
         //
         //   pending reward = (user.amount * pool.accDragonEggPerShare) - user.rewardDebt
@@ -37,9 +37,9 @@ contract MasterChefV2 is Ownable, ReentrancyGuard {
     // Info of each pool.
     struct PoolInfo {
         IERC20 lpToken;           // Address of LP token contract.
-        uint256 allocPoint;       // How many allocation points assigned to this pool. LITHs to distribute per block.
-        uint256 lastRewardBlock;  // Last block number that LITHs distribution occurs.
-        uint256 accDragonEggPerShare;   // Accumulated LITHs per share, times 1e12. See below.
+        uint256 allocPoint;       // How many allocation points assigned to this pool. DragonEggs to distribute per block.
+        uint256 lastRewardBlock;  // Last block number that DragonEggs distribution occurs.
+        uint256 accDragonEggPerShare;   // Accumulated DragonEggs per share, times 1e12. See below.
         uint16 depositFeeBP;      // Deposit fee in basis points
         uint256 lpSupply;
     }
@@ -146,7 +146,7 @@ contract MasterChefV2 is Ownable, ReentrancyGuard {
             return _to - _from;
     }
 
-    // View function to see pending LITHs on frontend.
+    // View function to see pending DragonEggs on frontend.
     function pendingDragonEgg(uint256 _pid, address _user) external view returns (uint256) {
         PoolInfo storage pool = poolInfo[_pid];
         UserInfo storage user = userInfo[_pid][_user];
@@ -191,8 +191,8 @@ contract MasterChefV2 is Ownable, ReentrancyGuard {
 
         if (dragonEggReward > 0)
         {
-            dragonEgg.mint(address(this), dragonEggReward * 900 / 1000);
-            dragonEgg.mint(feeAddress, dragonEggReward * 100 / 1000);
+            dragonEgg.mint(feeAddress, dragonEggReward / 10);
+            dragonEgg.mint(address(this), dragonEggReward);
         }
 
 
@@ -273,7 +273,7 @@ contract MasterChefV2 is Ownable, ReentrancyGuard {
         emit EmergencyWithdraw(msg.sender, _pid, amount);
     }
 
-    // Safe dragonEgg transfer function, just in case if rounding error causes pool to not have enough LITHs.
+    // Safe dragonEgg transfer function, just in case if rounding error causes pool to not have enough DragonEggs.
     function safeDragonEggTransfer(address _to, uint256 _amount) internal {
         uint256 dragonEggBal = dragonEgg.balanceOf(address(this));
         bool transferSuccess = false;
