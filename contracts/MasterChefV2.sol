@@ -46,7 +46,7 @@ contract MasterChefV2 is Ownable, ReentrancyGuard {
 
     uint256 public constant dragonEggMaximumSupply = 250 * (10 ** 3) * (10 ** 18);
 
-    uint256 public constant dragonEggPreMint = 5 * (10 ** 3) * (10 ** 18);
+    uint256 public constant dragonEggPreMint = 1 * (10 ** 3) * (10 ** 18);
 
     // The DragonEgg TOKEN!
     DragonEggToken public dragonEgg;
