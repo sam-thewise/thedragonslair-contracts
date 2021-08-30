@@ -101,7 +101,7 @@ contract MasterChefV2 is Ownable, ReentrancyGuard {
         // Make sure the provided token is ERC20
         _lpToken.balanceOf(address(this));
 
-        require(_depositFeeBP <= 401, "add: invalid deposit fee basis points");
+        require(_depositFeeBP <= 301, "add: invalid deposit fee basis points");
         if (_withUpdate) {
             massUpdatePools();
         }
@@ -123,7 +123,7 @@ contract MasterChefV2 is Ownable, ReentrancyGuard {
 
     // Update the given pool's DragonEgg allocation point and deposit fee. Can only be called by the owner.
     function set(uint256 _pid, uint256 _allocPoint, uint16 _depositFeeBP, bool _withUpdate) external onlyOwner {
-        require(_depositFeeBP <= 401, "set: invalid deposit fee basis points");
+        require(_depositFeeBP <= 301, "set: invalid deposit fee basis points");
         if (_withUpdate) {
             massUpdatePools();
         }
