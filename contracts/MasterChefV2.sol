@@ -79,7 +79,7 @@ contract MasterChefV2 is Ownable, ReentrancyGuard {
         address _feeAddress,
         uint256 _dragonEggPerBlock,
         uint256 _startBlock
-    ) public {
+    ) {
         dragonEgg = _dragonEgg;
         feeAddress = _feeAddress;
         dragonEggPerBlock = _dragonEggPerBlock;
