@@ -49,7 +49,7 @@ contract MasterChefV2 is Ownable, ReentrancyGuard {
     uint256 public constant dragonEggPreMint = 1 * (10 ** 3) * (10 ** 18);
 
     // The DragonEgg TOKEN!
-    DragonEggToken public dragonEgg;
+    DragonEggToken public immutable dragonEgg;
     // DragonEgg tokens created per block.
     uint256 public dragonEggPerBlock;
     // Deposit Fee address
@@ -73,6 +73,7 @@ contract MasterChefV2 is Ownable, ReentrancyGuard {
     event EmergencyWithdraw(address indexed user, uint256 indexed pid, uint256 amount);
     event SetFeeAddress(address indexed user, address indexed newAddress);
     event UpdateStartBlock(uint256 newStartBlock);
+    event UpdateDragonEggPerBlock(uint256 newDragonEggPerBlock);
 
     constructor(
         DragonEggToken _dragonEgg,
@@ -151,7 +152,7 @@ contract MasterChefV2 is Ownable, ReentrancyGuard {
         PoolInfo storage pool = poolInfo[_pid];
         UserInfo storage user = userInfo[_pid][_user];
         uint256 accDragonEggPerShare = pool.accDragonEggPerShare;
-        if (block.number > pool.lastRewardBlock && pool.lpSupply != 0) {
+        if (block.number > pool.lastRewardBlock && pool.lpSupply != 0 && totalAllocPoint > 0) {
             uint256 multiplier = getMultiplier(pool.lastRewardBlock, block.number);
             uint256 dragonEggReward = (multiplier * dragonEggPerBlock * pool.allocPoint) / totalAllocPoint;
             accDragonEggPerShare = accDragonEggPerShare + ((dragonEggReward * 1e12) / pool.lpSupply);
@@ -182,19 +183,32 @@ contract MasterChefV2 is Ownable, ReentrancyGuard {
 
         uint256 multiplier = getMultiplier(pool.lastRewardBlock, block.number);
         uint256 dragonEggReward = (multiplier * dragonEggPerBlock * pool.allocPoint) / totalAllocPoint;
+        uint256 devDragonEggReward = dragonEggReward / 10;
+
+        uint256 dragonEggTotalSupply = dragonEgg.totalSupply();
 
         // This shouldn't happen, but just in case we stop rewards.
-        if (dragonEgg.totalSupply() > dragonEggMaximumSupply)
+        if (dragonEggTotalSupply > dragonEggMaximumSupply)
+        {
             dragonEggReward = 0;
-        else if ((dragonEgg.totalSupply() + dragonEggReward) > dragonEggMaximumSupply)
-            dragonEggReward = dragonEggMaximumSupply - dragonEgg.totalSupply();
+            devDragonEggReward = 0;
+        }
+        else if ((dragonEggTotalSupply + dragonEggReward + devDragonEggReward) > dragonEggMaximumSupply)
+        {
+            uint256 dragonEggSupplyRemaining = dragonEggMaximumSupply - dragonEggTotalSupply;
+            dragonEggReward = dragonEggSupplyRemaining * 10/11;
+            devDragonEggReward = dragonEggSupplyRemaining - dragonEggReward;
+        }
 
         if (dragonEggReward > 0)
         {
-            dragonEgg.mint(feeAddress, dragonEggReward / 10);
             dragonEgg.mint(address(this), dragonEggReward);
         }
 
+        if( devDragonEggReward > 0 )
+        {
+            dragonEgg.mint(feeAddress, devDragonEggReward);
+        }
 
         // The first time we reach the Dragon Eggs max supply we solidify the end of farming.
         if (dragonEgg.totalSupply() >= dragonEggMaximumSupply && emmissionEndBlock == type(uint256).max)
@@ -283,6 +297,14 @@ contract MasterChefV2 is Ownable, ReentrancyGuard {
             transferSuccess = dragonEgg.transfer(_to, _amount);
         }
         require(transferSuccess, "safeDragonEggTransfer: transfer failed");
+    }
+
+    // Update the emission rate of DragonEgg. Can only be called by the owner.
+    function setDragonEggPerBlock( uint256 _dragonEggPerBlock ) external onlyOwner {
+        require(_dragonEggPerBlock < 1 * (10 ** 18), "emissions per block too high" );
+        massUpdatePools();
+        dragonEggPerBlock = _dragonEggPerBlock;
+        emit UpdateDragonEggPerBlock(_dragonEggPerBlock);
     }
 
     function setFeeAddress(address _feeAddress) external {
