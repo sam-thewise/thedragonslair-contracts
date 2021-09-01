@@ -301,7 +301,7 @@ contract MasterChefV2 is Ownable, ReentrancyGuard {
 
     // Update the emission rate of DragonEgg. Can only be called by the owner.
     function setDragonEggPerBlock( uint256 _dragonEggPerBlock ) external onlyOwner {
-        require(_dragonEggPerBlock < 1 * (10 ** 18), "emissions per block too high" );
+        require(_dragonEggPerBlock <= 1 * (10 ** 18), "emissions per block too high" );
         massUpdatePools();
         dragonEggPerBlock = _dragonEggPerBlock;
         emit UpdateDragonEggPerBlock(_dragonEggPerBlock);
